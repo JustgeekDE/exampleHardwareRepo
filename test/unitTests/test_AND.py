@@ -24,7 +24,7 @@ class SimulationUnitTest(TestCase):
     circuit.setSignal(SignalWithResistance("B", 0.0, 10))
     circuit.inspectVoltage('AND')
 
-    circuit.run(200)
+    circuit.run()
     self.assertLess(circuit.getVoltage('AND'), 0.5)
 
   def testLowHighShouldResultInLow(self):
@@ -34,7 +34,7 @@ class SimulationUnitTest(TestCase):
     circuit.setSignal(SignalWithResistance("B", 5.0, 10))
     circuit.inspectVoltage('AND')
 
-    circuit.run(200)
+    circuit.run()
     self.assertLess(circuit.getVoltage('AND'), 0.5)
 
   def testHighLowShouldResultInLow(self):
@@ -44,7 +44,7 @@ class SimulationUnitTest(TestCase):
     circuit.setSignal(SignalWithResistance("B", 0.0, 10))
     circuit.inspectVoltage('AND')
 
-    circuit.run(200)
+    circuit.run()
     self.assertLess(circuit.getVoltage('AND'), 0.5)
 
   def testHighHighShouldResultInHigh(self):
@@ -54,7 +54,7 @@ class SimulationUnitTest(TestCase):
     circuit.setSignal(SignalWithResistance("B", 5.0, 10))
     circuit.inspectVoltage('AND')
 
-    circuit.run(200)
+    circuit.run()
     self.assertGreater(circuit.getVoltage('AND'), 4.5)
 
   def testShouldNotUseTooMuchCurrent(self):
@@ -64,40 +64,40 @@ class SimulationUnitTest(TestCase):
     circuit.setSignal(SignalWithResistance("B", 5.0, 10))
     circuit.inspectCurrent('VP5V')
 
-    circuit.run(200)
+    circuit.run()
     self.assertLess(circuit.getMaxCurrent('VP5V'), .01)
 
     circuit.setSignal(SignalWithResistance("A", 0.0, 10))
-    circuit.run(200)
+    circuit.run()
     self.assertLess(circuit.getMaxCurrent('VP5V'), 0.01)
 
     circuit.setSignal(SignalWithResistance("B", 0.0, 10))
-    circuit.run(200)
+    circuit.run()
     self.assertLess(circuit.getMaxCurrent('VP5V'), 0.01)
 
     circuit.setSignal(SignalWithResistance("A", 5.0, 10))
-    circuit.run(200)
+    circuit.run()
     self.assertLess(circuit.getMaxCurrent('VP5V'), 0.01)
 
-  def testShouldSwitchOnIn50ns(self):
+  def testShouldSwitchOnIn1ns(self):
     circuit = self.getCircuit()
 
     circuit.setSignal(SignalWithResistance("A", 5.0, 10))
-    circuit.setSignal(DelayedSignal("B", 5.0, delay=100, startValue=0, resistance=10))
+    circuit.setSignal(DelayedSignal("B", 5.0, delay=10, startValue=0, resistance=10))
     circuit.inspectVoltage('AND')
 
-    circuit.run(200, 0.05)
-    self.assertLess(circuit.getMaxVoltage('AND', 0.01, 100), 0.5)
-    self.assertGreater(circuit.getMinVoltage('AND', 100.05, 200), 4.5)
+    circuit.run(20, 0.01)
+    self.assertLess(circuit.getMaxVoltage('AND', 1, 10), 0.5)
+    self.assertGreater(circuit.getMinVoltage('AND', 11, 20), 4.5)
 
-  def testShouldSwitchOffIn50ns(self):
+  def testShouldSwitchOffIn1ns(self):
     circuit = self.getCircuit()
 
     circuit.setSignal(SignalWithResistance("A", 5.0, 10))
-    circuit.setSignal(DelayedSignal("B", value=0.0, delay=100, resistance=10, startValue=5.0))
+    circuit.setSignal(DelayedSignal("B", value=0.0, delay=10, resistance=10, startValue=5.0))
     circuit.inspectVoltage('AND')
 
-    circuit.run(200, 0.05)
-    self.assertGreater(circuit.getMaxVoltage('AND', 0.01, 100), 4.5)
-    self.assertLess(circuit.getMinVoltage('AND', 100.05, 200), 0.5)
+    circuit.run(20, 0.01)
+    self.assertGreater(circuit.getMinVoltage('AND', 1, 10), 4.5)
+    self.assertLess(circuit.getMaxVoltage('AND', 11, 20), 0.5)
 
