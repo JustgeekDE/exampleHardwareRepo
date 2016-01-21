@@ -1,18 +1,16 @@
-import os, sys
 from pkg_resources import resource_string
 
-import unittest
+from unittest import TestCase
 
+import os, sys
 sys.path.insert(0, os.getcwd())
-print(str(sys.path))
 
 from scoville.circuit import Circuit
 from scoville.signal import SignalWithResistance, DelayedSignal
 from scoville.eagleSchematic import EagleSchematic
 
 
-
-class SimulationUnitTest(unittest.TestCase):
+class SimulationUnitTest(TestCase):
 
   def getCircuit(self):
     andSource = resource_string('hardware', 'singleGates/AND.sch')
@@ -103,5 +101,3 @@ class SimulationUnitTest(unittest.TestCase):
     self.assertGreater(circuit.getMaxVoltage('AND', 0.01, 100), 4.5)
     self.assertLess(circuit.getMinVoltage('AND', 100.05, 200), 0.5)
 
-if __name__ == '__main__':
-  unittest.main()
