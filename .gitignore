@@ -1,4 +1,9 @@
+scoville/
 # Ignore list for Eagle, a PCB layout tool
+
+*.pyc
+.cache
+.idea
 
 # Backup files
 *.s#?
