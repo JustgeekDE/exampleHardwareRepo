@@ -1,5 +1,5 @@
 import unittest
-
+import sys
 import serial
 
 from scoville.arduinoTester import ArduinoInterface
@@ -16,11 +16,11 @@ def getCircuitFunction(interface):
 def runTests(interface, testClass):
   testClass.getCircuit = getCircuitFunction(interface)
   xorTests = unittest.TestLoader().loadTestsFromTestCase(testClass)
-  unittest.TextTestRunner(verbosity=2).run(xorTests)
+  return unittest.TextTestRunner(verbosity=2).run(xorTests)
 
 
 def setupInterface():
-  serialInterface = serial.Serial(port='/dev/tty.usbmodem1411', baudrate=115200, timeout=1)
+  serialInterface = serial.Serial(port='/dev/tty.usbmodem1421', baudrate=115200, timeout=1)
 
   arduinoInterface = ArduinoInterface(serialInterface)
   arduinoInterface.mapOutput('A', 2)
@@ -34,6 +34,9 @@ def setupInterface():
 
 if __name__ == '__main__':
   (serialInterface, arduinoInterface) = setupInterface()
-  runTests(arduinoInterface, test_XOR.XORUnitTests)
+  resultXOR = runTests(arduinoInterface, test_XOR.XORUnitTests)
 
   serialInterface.close()
+
+  result = resultXOR.wasSuccessful()
+  sys.exit(not result)

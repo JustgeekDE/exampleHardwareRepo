@@ -22,10 +22,13 @@ def getCircuitFunction(schematicFileName):
 def runTests(schematicFileName, testClass):
   testClass.getCircuit = getCircuitFunction(schematicFileName)
   xorTests = unittest.TestLoader().loadTestsFromTestCase(testClass)
-  unittest.TextTestRunner(verbosity=2).run(xorTests)
+  return unittest.TextTestRunner(verbosity=2).run(xorTests)
 
 
 if __name__ == '__main__':
   sys.path.insert(0, os.getcwd())
-  runTests('singleGates/XOR.sch', test_XOR.XORUnitTests)
-  runTests('singleGates/AND.sch', test_AND.AndUnitTests)
+  resultXOR = runTests('singleGates/XOR.sch', test_XOR.XORUnitTests)
+  resultAND = runTests('singleGates/AND.sch', test_AND.AndUnitTests)
+
+  result = resultXOR.wasSuccessful() and resultAND.wasSuccessful()
+  sys.exit(not result)
