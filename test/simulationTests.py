@@ -1,9 +1,12 @@
-from pkg_resources import resource_string
-import unittest, os, sys
-from unitTests import test_XOR, test_AND
+import os
+import sys
+import unittest
 
-from scoville.eagleSchematic import EagleSchematic
+from pkg_resources import resource_string
+
 from scoville.circuit import Circuit
+from scoville.eagleSchematic import EagleSchematic
+from unitTests import test_XOR, test_AND
 
 
 def getCircuitFunction(schematicFileName):
@@ -12,6 +15,7 @@ def getCircuitFunction(schematicFileName):
     schematic = EagleSchematic(schematicSource)
     circuit = Circuit(schematic.getSpiceData())
     return circuit
+
   return getCircuit
 
 
@@ -22,6 +26,6 @@ def runTests(schematicFileName, testClass):
 
 
 if __name__ == '__main__':
-    sys.path.insert(0, os.getcwd())
-    runTests('singleGates/XOR.sch', test_XOR.XORUnitTests)
-    runTests('singleGates/AND.sch', test_AND.AndUnitTests)
+  sys.path.insert(0, os.getcwd())
+  runTests('singleGates/XOR.sch', test_XOR.XORUnitTests)
+  runTests('singleGates/AND.sch', test_AND.AndUnitTests)
