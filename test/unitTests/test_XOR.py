@@ -4,9 +4,9 @@ from scoville.signal import GenericSignal
 LOW = 0.0
 HIGH = 5.0
 
-MAX_LOW_VOLTAGE = 0.5
+MAX_LOW_VOLTAGE = 1.0
 MIN_HIGH_OUTPUT_VOLTAGE = 4.5
-MIN_HIGH_INTERNAL_VOLTAGE = 3.5
+MIN_HIGH_INTERNAL_VOLTAGE = 3.2
 
 
 class XORUnitTests(TestCase):

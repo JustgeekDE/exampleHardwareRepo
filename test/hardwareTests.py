@@ -2,7 +2,7 @@ import unittest
 
 import serial
 
-from arduinoTester import ArduinoInterface
+from scoville.arduinoTester import ArduinoInterface
 from unitTests import test_XOR
 
 
@@ -20,7 +20,7 @@ def runTests(interface, testClass):
 
 
 def setupInterface():
-  serialInterface = serial.Serial(port='/dev/tty.usbmodem1421', baudrate=115200, timeout=1)
+  serialInterface = serial.Serial(port='/dev/tty.usbmodem1411', baudrate=115200, timeout=1)
 
   arduinoInterface = ArduinoInterface(serialInterface)
   arduinoInterface.mapOutput('A', 2)
