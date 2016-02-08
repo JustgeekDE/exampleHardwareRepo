@@ -1,69 +1,68 @@
-from pkg_resources import resource_string
-
 from unittest import TestCase
+from scoville.signal import GenericSignal
 
-import os, sys
-sys.path.insert(0, os.getcwd())
+LOW = 0.0
+HIGH = 5.0
 
-from scoville.circuit import Circuit
-from scoville.signal import SignalWithResistance, DelayedSignal
-from scoville.eagleSchematic import EagleSchematic
-
-
-class SimulationUnitTest(TestCase):
+MAX_LOW_VOLTAGE = 0.5
+MIN_HIGH_OUTPUT_VOLTAGE = 4.5
+MIN_HIGH_INTERNAL_VOLTAGE = 3.5
 
 
-  def getCircuit(self):
-    schematicSource = resource_string('hardware', 'singleGates/XOR.sch')
-    schematic = EagleSchematic(schematicSource)
-    circuit = Circuit(schematic.getSpiceData())
-
+class XORUnitTests(TestCase):
+  def setInspectionSignals(self, circuit):
     circuit.inspectVoltage('XOR')
     circuit.inspectVoltage('AND')
     circuit.inspectVoltage('NOR')
-    return circuit
 
   def testLowAndLow(self):
     circuit = self.getCircuit()
-    circuit.setSignal(SignalWithResistance("A", 0.0, 10))
-    circuit.setSignal(SignalWithResistance("B", 0.0, 10))
+    self.setInspectionSignals(circuit)
+
+    circuit.setSignal(GenericSignal("A", LOW))
+    circuit.setSignal(GenericSignal("B", LOW))
 
     circuit.run()
 
-    self.assertLess(circuit.getVoltage('XOR'), 0.5)
-    self.assertLess(circuit.getVoltage('AND'), 0.5)
-    self.assertGreater(circuit.getVoltage('NOR'), 3.5)
+    self.assertLess(circuit.getVoltage('XOR'), MAX_LOW_VOLTAGE)
+    self.assertLess(circuit.getVoltage('AND'), MAX_LOW_VOLTAGE)
+    self.assertGreater(circuit.getVoltage('NOR'), MIN_HIGH_INTERNAL_VOLTAGE)
 
   def testLowAndHigh(self):
     circuit = self.getCircuit()
-    circuit.setSignal(SignalWithResistance("A", 0.0, 10))
-    circuit.setSignal(SignalWithResistance("B", 5.0, 10))
+    self.setInspectionSignals(circuit)
+
+    circuit.setSignal(GenericSignal("A", LOW))
+    circuit.setSignal(GenericSignal("B", HIGH))
 
     circuit.run()
 
-    self.assertGreater(circuit.getVoltage('XOR'), 4.5)
-    self.assertLess(circuit.getVoltage('AND'), 0.5)
-    self.assertLess(circuit.getVoltage('NOR'), 0.5)
+    self.assertGreater(circuit.getVoltage('XOR'), MIN_HIGH_OUTPUT_VOLTAGE)
+    self.assertLess(circuit.getVoltage('AND'), MAX_LOW_VOLTAGE)
+    self.assertLess(circuit.getVoltage('NOR'), MAX_LOW_VOLTAGE)
 
   def testHighAndLow(self):
     circuit = self.getCircuit()
-    circuit.setSignal(SignalWithResistance("A", 5.0, 10))
-    circuit.setSignal(SignalWithResistance("B", 0.0, 10))
+    self.setInspectionSignals(circuit)
+
+    circuit.setSignal(GenericSignal("A", HIGH))
+    circuit.setSignal(GenericSignal("B", LOW))
 
     circuit.run()
 
-    self.assertGreater(circuit.getVoltage('XOR'), 4.5)
-    self.assertLess(circuit.getVoltage('AND'), 0.5)
-    self.assertLess(circuit.getVoltage('NOR'), 0.5)
+    self.assertGreater(circuit.getVoltage('XOR'), MIN_HIGH_OUTPUT_VOLTAGE)
+    self.assertLess(circuit.getVoltage('AND'), MAX_LOW_VOLTAGE)
+    self.assertLess(circuit.getVoltage('NOR'), MAX_LOW_VOLTAGE)
 
   def testHighAndHigh(self):
     circuit = self.getCircuit()
-    circuit.setSignal(SignalWithResistance("A", 5.0, 10))
-    circuit.setSignal(SignalWithResistance("B", 5.0, 10))
+    self.setInspectionSignals(circuit)
+
+    circuit.setSignal(GenericSignal("A", HIGH))
+    circuit.setSignal(GenericSignal("B", HIGH))
 
     circuit.run()
 
-    self.assertLess(circuit.getVoltage('XOR'), 0.5)
-    self.assertGreater(circuit.getVoltage('AND'), 3.5)
-    self.assertLess(circuit.getVoltage('NOR'), 0.5)
-
+    self.assertLess(circuit.getVoltage('XOR'), MAX_LOW_VOLTAGE)
+    self.assertGreater(circuit.getVoltage('AND'), MIN_HIGH_INTERNAL_VOLTAGE)
+    self.assertLess(circuit.getVoltage('NOR'), MAX_LOW_VOLTAGE)
